@@ -23,7 +23,9 @@ Lombok
 Validation
 
 <br/><br/><br/>
+
 ## <ERD>
+<br/>
 ![nomorebuy table1](https://github.com/GyeongSe99/SpringProject-NoMoreBuy/assets/126084941/6f9d1e50-662d-4580-9f65-51e8b4ae6cfe)
 <br/><br/>
 ## <회원 관련 기능>
