@@ -26,7 +26,7 @@ Validation
 
 ## ERD
 
-![nomorebuy table1](https://github.com/GyeongSe99/SpringProject-NoMoreBuy/assets/126084941/6f9d1e50-662d-4580-9f65-51e8b4ae6cfe)
+![nomorebuy table2](https://github.com/GyeongSe99/SpringProject-NoMoreBuy/assets/126084941/2b0c5e7f-c947-4ee4-8235-7f443c2d26a9)
 <br/><br/>
 ## <회원 관련 기능>
 
