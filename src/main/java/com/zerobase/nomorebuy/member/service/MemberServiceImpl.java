@@ -1,18 +1,18 @@
 package com.zerobase.nomorebuy.member.service;
 
-import com.zerobase.nomorebuy.global.ResponseStatus;
 import com.zerobase.nomorebuy.global.exception.MemberErrorCode;
 import com.zerobase.nomorebuy.global.exception.MemberException;
-import com.zerobase.nomorebuy.global.security.JwtTokenProvider;
 import com.zerobase.nomorebuy.member.domain.Member;
-import com.zerobase.nomorebuy.member.domain.SignInDto;
+import com.zerobase.nomorebuy.member.domain.MemberDto;
 import com.zerobase.nomorebuy.member.domain.SignUpDto.Request;
 import com.zerobase.nomorebuy.member.repository.MemberJpaRepository;
+import com.zerobase.nomorebuy.member.type.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -20,14 +20,17 @@ import org.springframework.stereotype.Service;
 public class MemberServiceImpl implements MemberService, UserDetailsService {
 
   private final MemberJpaRepository memberRepository;
-  private final JwtTokenProvider jwtTokenProvider;
 
   @Override
+  @Transactional
   public Member signUp(Request request) {
-    log.info("[Sign Up]");
 
-    if (memberRepository.findByKakaoId(request.getKakaoId())
-        .isPresent()) {
+    log.info("[Sign Up]");
+    if (memberRepository.existsByUserId(request.getUserId())) {
+      throw new MemberException(MemberErrorCode.ALREADY_EXIST_USERNAME);
+    }
+
+    if (memberRepository.existsByKakaoId(request.getKakaoId())) {
       throw new MemberException(MemberErrorCode.ALREADY_EXIST_MEMBER);
     }
 
@@ -36,17 +39,25 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String memberId) {
-    return memberRepository.findById(memberId)
+    Member member = memberRepository.findByUserId(memberId)
         .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
+
+    return MemberDto.builder()
+        .Id(member.getId())
+        .email(member.getEmail())
+        .userId(member.getUserId())
+        .account(member.getAccount())
+        .accountModifiedDate(member.getAccountModifiedDate())
+        .openKaKaoTalkURL(member.getOpenKaKaoTalkURL())
+        .kakaoId(member.getKakaoId())
+        .signupDateTime(member.getSignupDateTime())
+        .build();
   }
 
-  public SignInDto.Response signIn(String kakaoId) {
+  public Member signIn(String kakaoId) {
     Member member = memberRepository.findByKakaoId(kakaoId)
         .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
-    return SignInDto.Response.builder()
-        .token(jwtTokenProvider.generateToken(member.getId(), member.getRoles()))
-        .status(ResponseStatus.SUCCESS)
-        .build();
+    return member;
   }
 }

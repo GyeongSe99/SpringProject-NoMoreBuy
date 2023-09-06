@@ -30,37 +30,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.httpBasic().disable()
         .csrf().disable()
-
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
 
+        .and()
         .authorizeRequests()
         .antMatchers("/").permitAll()
-
-        .antMatchers("**exception**").permitAll()
-
-        .anyRequest().hasRole("USER")
+        .antMatchers("/swagger-ui/**").permitAll()
+//        .anyRequest().hasRole("USER")
 
         .and()
-        .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
-        .and()
-        .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+        .exceptionHandling()
+        .accessDeniedHandler(new CustomAccessDeniedHandler())
+        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 
         .and()
         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
             UsernamePasswordAuthenticationFilter.class);
-
-    http.authorizeRequests()
-        .antMatchers(
-            "/")
-        .permitAll();
-
   }
 
   @Override
   public void configure(WebSecurity webSecurity) {
-    webSecurity.ignoring().antMatchers("swagger");
+    webSecurity.ignoring().antMatchers("/v2/api-docs", "/swagger-resources/**",
+        "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception");
   }
 }
 

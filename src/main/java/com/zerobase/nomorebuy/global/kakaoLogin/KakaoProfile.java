@@ -1,12 +1,16 @@
 package com.zerobase.nomorebuy.global.kakaoLogin;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class KakaoProfile {
 
-  private String id;
-  private KakaoAccount kakao_account;
+  @JsonProperty("id")
+  private Long id;
+
+  @JsonProperty("kakao_account")
+  private KakaoAccount kakaoAccount;
 
   @Data
   public static class KakaoAccount {

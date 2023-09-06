@@ -43,7 +43,6 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  // Jwt로 인증정보 조회
   public Authentication getAuthentication(String token) {
     log.info("[getAuthentication] 토큰 인증정보 조회");
     UserDetails userDetails = this.memberService.loadUserByUsername(this.getUserId(token));
