@@ -6,7 +6,6 @@ import com.zerobase.nomorebuy.member.domain.Member;
 import com.zerobase.nomorebuy.member.domain.MemberDto;
 import com.zerobase.nomorebuy.member.domain.SignUpDto.Request;
 import com.zerobase.nomorebuy.member.repository.MemberJpaRepository;
-import com.zerobase.nomorebuy.member.type.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

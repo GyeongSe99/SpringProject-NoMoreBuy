@@ -24,7 +24,6 @@ public class KakaoLoginService {
   private final String KAKAO_USERINFO_REQUEST_URL = "https://kapi.kakao.com/v2/user/me";
   private final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
 
-  private final Gson gson;
   private final RestTemplate restTemplate;
 
   @Value("${kakaoAPI.restApiKey}")
