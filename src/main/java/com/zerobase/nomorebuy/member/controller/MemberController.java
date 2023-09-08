@@ -1,7 +1,7 @@
 package com.zerobase.nomorebuy.member.controller;
 
 import com.zerobase.nomorebuy.global.ResponseStatus;
-import com.zerobase.nomorebuy.global.kakaoLogin.KakaoCode;
+import com.zerobase.nomorebuy.global.exception.MemberException;
 import com.zerobase.nomorebuy.global.kakaoLogin.KakaoLoginService;
 import com.zerobase.nomorebuy.global.kakaoLogin.KakaoProfile;
 import com.zerobase.nomorebuy.global.kakaoLogin.RetKakaoOAuth;
@@ -31,7 +31,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("member")
 public class MemberController {
 
-  private final KakaoCode kakaoCode;
   private final KakaoLoginService kakaoLoginService;
   private final MemberServiceImpl memberService;
   private final JwtTokenProvider jwtTokenProvider;
@@ -39,7 +38,7 @@ public class MemberController {
   @GetMapping("/kakao/auth")
   public void getKaKaoAuthURL(HttpServletResponse response) throws IOException {
     log.info("KakaoAPI : 인증코드 받기");
-    response.sendRedirect(kakaoCode.responseUrl());
+    response.sendRedirect(kakaoLoginService.responseUrl());
   }
 
 
@@ -48,38 +47,26 @@ public class MemberController {
   public RetKakaoOAuth getKaKaoAccessToken(@RequestParam String code) throws IOException {
     log.info("kakaoAPI : 액세스 토큰 받기");
     RetKakaoOAuth kakaoTokenInfo = kakaoLoginService.getKakaoTokenInfo(code);
-    String token = kakaoTokenInfo.getAccess_token();
+    String token = kakaoTokenInfo.getAccessToken();
     log.info("Access token : " + token);
     return kakaoTokenInfo;
   }
 
   @PostMapping("/kakao/signup")
   public Response signUp(@RequestBody Request request) {
-    String accessToken = request.getKakaoOAuth().getAccess_token();
-    log.info("kakaoAPI : 유저 정보 가져오기");
-    KakaoProfile kakaoProfile = kakaoLoginService.getKakaoProfile(accessToken);
-    if (kakaoProfile == null) {
-      throw new RuntimeException("유저 정보 가져오기 실패");
-    }
-    if (kakaoProfile.getKakaoAccount().getEmail() == null) {
-      log.error("이메일 없음. 이메일 동의 여부 확인 필요.");
-      kakaoLoginService.kakaoUnlink(accessToken);
-      throw new RuntimeException("토큰 연결 해제");
-    }
-
-    log.info(kakaoProfile.toString());
-
-    request.setKakaoId(String.valueOf(kakaoProfile.getId()));
-
     log.info("회원가입 진행");
-    Member signUp = memberService.signUp(request);
-    if (signUp == null) {
-      throw new RuntimeException("회원 가입이 실패하였습니다.");
+    Member signUp = null;
+
+    try {
+      signUp = memberService.signUp(request);
+
+    } catch (MemberException e) {
+      // MemberException 발생 시 처리할 코드
+      log.error("회원 가입 중 에러 발생: " + e.getMessage());
+      // 여기서 예외 처리 로직을 추가하거나 필요에 따라 다른 예외를 던질 수 있습니다.
     }
 
     log.info("회원가입에 성공하였습니다.");
-    log.info("userID : " + signUp.getId());
-    log.info("username : " + signUp.getUserId());
 
     return SignUpDto.Response.builder().member(signUp)
         .Id(signUp.getId())
@@ -95,7 +82,7 @@ public class MemberController {
   @PostMapping("/kakao/signIn")
   public SignInDto.Response signIn(@RequestBody SignInDto.Request request) {
     log.info("[Sign in] 카카오 API로 로그인 진행 중");
-    String accessToken = request.getKakaoOAuth().getAccess_token();
+    String accessToken = request.getKakaoOAuth().getAccessToken();
     KakaoProfile kakaoProfile = kakaoLoginService.getKakaoProfile(accessToken);
 
     if (kakaoProfile == null) {

@@ -1,8 +1,6 @@
 package com.zerobase.nomorebuy.global.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.Gson;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +20,8 @@ public class BeanConfig {
   }
 
   @Bean
-  public String objectMapper() throws JsonProcessingException {
-    return new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString("DTO객체");
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper();
   }
 
 

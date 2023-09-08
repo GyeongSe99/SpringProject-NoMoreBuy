@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MemberJpaRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String> {
 
   Optional<Member> findByKakaoId(String kakaoId);
 
@@ -15,4 +15,6 @@ public interface MemberJpaRepository extends JpaRepository<Member, String> {
   boolean existsByKakaoId(String s);
 
   boolean existsByUserId(String s);
+
+  boolean existsByEmail(String s);
 }

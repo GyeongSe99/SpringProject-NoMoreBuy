@@ -1,10 +1,8 @@
 package com.zerobase.nomorebuy.global.kakaoLogin;
 
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,16 +18,25 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class KakaoLoginService {
 
-  private final String KAKAO_TOKEN_REQUEST_URL = "https://kauth.kakao.com/oauth/token";
-  private final String KAKAO_USERINFO_REQUEST_URL = "https://kapi.kakao.com/v2/user/me";
-  private final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
-
   private final RestTemplate restTemplate;
-
+  @Value("${kakaoAPI.KAKAO_TOKEN_REQUEST_URL}")
+  private String KAKAO_TOKEN_REQUEST_URL;
+  @Value("${kakaoAPI.KAKAO_USERINFO_REQUEST_URL}")
+  private String KAKAO_USERINFO_REQUEST_URL;
+  @Value("${kakaoAPI.KAKAO_UNLINK_URL}")
+  private String KAKAO_UNLINK_URL;
+  @Value("${kakaoAPI.KAKAO_LOGIN_URL}")
+  private String KAKAO_LOGIN_URL;
   @Value("${kakaoAPI.restApiKey}")
   private String restApiKey;
   @Value("${kakaoAPI.redirectUrl}")
   private String kakaoRedirectUrl;
+
+  public String responseUrl() {
+    String kakaoLoginUrl =
+        KAKAO_LOGIN_URL + restApiKey + "&redirect_uri=" + kakaoRedirectUrl + "&response_type=code";
+    return kakaoLoginUrl;
+  }
 
   public RetKakaoOAuth getKakaoTokenInfo(String code) {
     HttpHeaders headers = new HttpHeaders();
@@ -42,7 +49,8 @@ public class KakaoLoginService {
     params.add("code", code);
 
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-    ResponseEntity<RetKakaoOAuth> response = restTemplate.postForEntity(KAKAO_TOKEN_REQUEST_URL, request,
+    ResponseEntity<RetKakaoOAuth> response = restTemplate.postForEntity(KAKAO_TOKEN_REQUEST_URL,
+        request,
         RetKakaoOAuth.class);
 
     if (response.getStatusCode() == HttpStatus.OK) {
