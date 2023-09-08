@@ -47,7 +47,7 @@ public class SignUpDto {
   public static class Response {
 
     private Member member;
-    private Long Id;
     private ResponseStatus status;
+
   }
 }

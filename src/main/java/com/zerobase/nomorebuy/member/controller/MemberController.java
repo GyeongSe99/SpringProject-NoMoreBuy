@@ -69,7 +69,6 @@ public class MemberController {
     log.info("회원가입에 성공하였습니다.");
 
     return SignUpDto.Response.builder().member(signUp)
-        .Id(signUp.getId())
         .status(ResponseStatus.SUCCESS).build();
   }
 
