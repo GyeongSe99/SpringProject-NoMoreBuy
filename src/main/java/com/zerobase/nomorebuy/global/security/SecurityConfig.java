@@ -1,5 +1,6 @@
 package com.zerobase.nomorebuy.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final JwtTokenProvider jwtTokenProvider;
+  private final ObjectMapper objectMapper;
 
   @Bean
   @Override
@@ -42,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .exceptionHandling()
         .accessDeniedHandler(new CustomAccessDeniedHandler())
-        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+        .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
 
         .and()
         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
