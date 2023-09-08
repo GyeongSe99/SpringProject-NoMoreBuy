@@ -59,11 +59,8 @@ public class MemberController {
 
     try {
       signUp = memberService.signUp(request);
-
     } catch (MemberException e) {
-      // MemberException 발생 시 처리할 코드
       log.error("회원 가입 중 에러 발생: " + e.getMessage());
-      // 여기서 예외 처리 로직을 추가하거나 필요에 따라 다른 예외를 던질 수 있습니다.
     }
 
     log.info("회원가입에 성공하였습니다.");
